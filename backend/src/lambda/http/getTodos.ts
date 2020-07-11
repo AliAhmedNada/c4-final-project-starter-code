@@ -9,7 +9,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
     const userId = getUserIdFromEvent(event);
 
-    const todos = await todoAccess.getTodo(userId);
+    const todos = await todoAccess.getTodos(userId);
 
     // Send results
     return {

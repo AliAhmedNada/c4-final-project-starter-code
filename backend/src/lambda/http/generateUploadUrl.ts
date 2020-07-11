@@ -35,7 +35,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     Expires: urlExpiration
   });
 
-  await todoAccess.setAttachmentUrl(todoId, attachmentId);
+  await todoAccess.updateTodoAttachmentUrl(todoId, attachmentId);
 
   return {
     statusCode: 200,
