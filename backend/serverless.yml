@@ -4,6 +4,7 @@ service:
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
+  - serverless-reqvalidator-plugin
 
 provider:
   name: aws
@@ -13,7 +14,7 @@ provider:
   region: ${opt:region, 'eu-west-3'}
 
   environment:
-    TODOITEM_TABLE: Todoitem-ali-${self:provider.stage}
+    TODOITEM_TABLE: Todoitem-ali-v2-${self:provider.stage}
     TODOITEM_TABLE_GSI: byUserId
     TODOITEM_S3_BUCKET_NAME: todoitem-alinada-attachments-2020-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
@@ -64,6 +65,10 @@ functions:
           path: todos
           authorizer: Auth
           cors: true
+          request:
+            schema:
+              application/json: ${file(src/models/create-todo-model.json)} # relative to where the serverless.yaml is
+
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -225,20 +230,26 @@ resources:
     TodoItemTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:provider.environment.TODOITEM_TABLE}
         AttributeDefinitions:
-          - AttributeName: todoId
+          - AttributeName: partitionKey
             AttributeType: S
-          - AttributeName: userId
+          - AttributeName: sortKey
+            AttributeType: S
+          - AttributeName: indexKey
             AttributeType: S
         KeySchema:
-          - AttributeName: todoId
+          - AttributeName: partitionKey
             KeyType: HASH
+          - AttributeName: sortKey
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
-        GlobalSecondaryIndexes:
+        TableName: ${self:provider.environment.TODOITEM_TABLE}
+        LocalSecondaryIndexes:
           - IndexName: ${self:provider.environment.TODOITEM_TABLE_GSI}
             KeySchema:
-              - AttributeName: userId
+              - AttributeName: partitionKey
                 KeyType: HASH
+              - AttributeName: indexKey
+                KeyType: RANGE
             Projection:
-              ProjectionType: ALL
+              ProjectionType: ALL 

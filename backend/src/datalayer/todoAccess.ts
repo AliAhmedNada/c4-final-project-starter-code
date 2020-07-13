@@ -1,12 +1,17 @@
-import * as AWS from "aws-sdk";
-import * as AWSXRay from "aws-xray-sdk";
-
+import * as AWS  from 'aws-sdk'
+import * as AWSXRay from 'aws-xray-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-import {TodoItem} from "../models/TodoItem";
 import * as uuid from 'uuid'
+
+const XAWS = AWSXRay.captureAWS(AWS)
+
+import { TodoItem } from '../models/TodoItem'
+import { APIGatewayProxyEvent } from 'aws-lambda'
+import { getUserId } from '../lambda/utils'
+import { TodoUpdate } from '../models/TodoUpdate'
 import { createLogger } from './logger'
-import {CreateTodoRequest} from "../requests/CreateTodoRequest";
-import {UpdateTodoRequest} from "../requests/UpdateTodoRequest";
+import { CreateTodoRequest } from '../requests/CreateTodoRequest'
+
 const logger = createLogger('todoAccess');
 
 const bucketName = process.env.TODOITEM_S3_BUCKET_NAME;
