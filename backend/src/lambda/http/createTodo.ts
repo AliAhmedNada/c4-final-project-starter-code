@@ -1,29 +1,44 @@
 import 'source-map-support/register'
-import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
-import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
-import {getUserIdFromEvent} from "../../auth/utils";
-import {TodoAccess} from "../../datalayer/todoAccess";
+import {
+  createTodo
+} from '../../businessLogic/todos'
 
-const todoAccess = new TodoAccess();
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyHandler,
+  APIGatewayProxyResult
+} from 'aws-lambda'
 
-export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+import {
+  CreateTodoRequest
+} from '../../requests/CreateTodoRequest'
+import * as middy from 'middy';
+import {
+  cors
+} from 'middy/middlewares';
 
-  const userId = getUserIdFromEvent(event);
+const createTodoHandler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise < APIGatewayProxyResult > => {
 
-  const newTodo: CreateTodoRequest = JSON.parse(event.body);
-  const todoId = await todoAccess.createTodo(userId, newTodo);
+  console.log('Processing event: ', event)
+  const authorization = event.headers.Authorization
+  const split = authorization.split(' ')
+  const jwtToken = split[1]
 
+  const newTodo: CreateTodoRequest = JSON.parse(event.body)
+  const item = await createTodo(newTodo, jwtToken)
+  console.log(item)
   return {
-    statusCode: 201,
+    statusCode: 200,
     headers: {
-      'Access-Control-Allow-Origin': '*'
-    },
+      "Access-Control-Allow-Origin": "*", 
+      "Access-Control-Allow-Credentials": true 
+  },
     body: JSON.stringify({
-      item:
-          {
-            todoId: todoId,
-            ...newTodo
-          }
+      item: item
     })
-  };
-};
+  }
+}
+
+export const handler = middy(createTodoHandler).use(cors({
+  credentials: true
+}));
