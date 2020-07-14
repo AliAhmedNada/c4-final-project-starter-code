@@ -7,7 +7,18 @@ const XAWS = AWSXRay.captureAWS(AWS)
 import { TodoItem } from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate'
 
-export class TodosAccess {
+function createDynamoDBClient() {
+    if (process.env.IS_OFFLINE) {
+      console.log('Creating a local DynamoDB instance')
+      return new XAWS.DynamoDB.DocumentClient({
+        region: 'localhost',
+        endpoint: 'http://localhost:8005'
+      })
+    }
+  
+    return new XAWS.DynamoDB.DocumentClient()
+}
+export class TodoAccess {
     constructor(
         private readonly docClient: DocumentClient = createDynamoDBClient(),
         private readonly todosTable = process.env.TODOITEM_TABLE,
@@ -73,32 +84,21 @@ export class TodosAccess {
             ExpressionAttributeNames: {
                 '#n': 'name'
             },
-            //ConditionExpression: 
-            //    'userId = :userId',
             ReturnValues: 'UPDATED_NEW'
         };
         
         this.docClient.update(params).promise()
     }
 
-    async deleteTodo(todoId: string, createdAt: string): Promise<void> {
-
-        var params = {
+    async deleteTodo(todoId: string, userId: string) {
+        const deleteTodo = await this.docClient.delete({
             TableName: this.todosTable,
-            Key: {
-                "todoId": todoId,
-                "createdAt": createdAt
-            },
-            ConditionExpression:
-                'todoId = :todoId and createdAt = :createdAt',
-            ExpressionAttributeValues: {
-                ':todoId': todoId,
-                ':createdAt': createdAt
-            }
-        }
-
-        await this.docClient.delete(params).promise()
+            Key: { userId, todoId }
+        })
+        .promise();
+      return { Deleted: deleteTodo };
     }
+  
 
     async setItemUrl(todoId: string, createdAt: string, itemUrl: string): Promise<void> {
         var params = {
@@ -119,14 +119,3 @@ export class TodosAccess {
 
 }
 
-function createDynamoDBClient() {
-    if (process.env.IS_OFFLINE) {
-      console.log('Creating a local DynamoDB instance')
-      return new XAWS.DynamoDB.DocumentClient({
-        region: 'localhost',
-        endpoint: 'http://localhost:8005'
-      })
-    }
-  
-    return new XAWS.DynamoDB.DocumentClient()
-}
