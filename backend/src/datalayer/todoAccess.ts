@@ -112,7 +112,7 @@ export class TodoAccess {
 
     
 
-    async generateUploadUrl(todoId: string, userId: string): Promise<string> {
+   /* async generateUploadUrl(todoId: string, userId: string): Promise<string> {
 
         const s3 = new XAWS.S3({
             signatureVersion: 'v4'
@@ -136,7 +136,23 @@ export class TodoAccess {
         })
         .promise();
       return uploadUrl;
+    }*/
+    async generateUploadUrl(todoId: string): Promise<string> {
+        console.log("Generating URL");
+        const s3 = new XAWS.S3({
+            signatureVersion: 'v4'
+          })
+          console.log("todoId:",todoId)
+
+        const url = s3.getSignedUrl('putObject', {
+            Bucket: bucketName,
+            Key: todoId,
+            Expires: 1000,
+        });
+        console.log(url);
+        return url as string;
     }
+
   }
 
 

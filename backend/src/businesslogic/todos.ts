@@ -75,5 +75,5 @@ export async function generateUploadUrl(todoId: string, jwtToken: string): Promi
   console.log(todoId)
   console.log("userId:",userId)
 
-  return todosAccess.generateUploadUrl(todoId, userId);
+  return todosAccess.generateUploadUrl(todoId);
 }
