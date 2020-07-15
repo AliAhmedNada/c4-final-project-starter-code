@@ -53,8 +53,9 @@ export class TodoAccess {
                 ':todoId' : todoId
             }
         }).promise()
-
+        
         const item = result.Items[0]
+        console.log('item',item)
         return item as TodoItem
     }
 
@@ -68,7 +69,6 @@ export class TodoAccess {
     }
 
     async updateTodo(todoId: string, createdAt: string, update: TodoUpdate): Promise<void> {
-
         var params = {
             TableName: this.todosTable,
             Key: {
@@ -91,18 +91,19 @@ export class TodoAccess {
         this.docClient.update(params).promise()
     }
 
-    async deleteTodo(todoId: string, userId: string): Promise<void> {
+    async deleteTodo(todoId: string, createdAt: string): Promise<void> {
+
         var params = {
             TableName: this.todosTable,
             Key: {
                 "todoId": todoId,
-                "userId": userId
+                "createdAt": createdAt
             },
             ConditionExpression:
-                'todoId = :todoId and userId = :userId',
+                'todoId = :todoId and createdAt = :createdAt',
             ExpressionAttributeValues: {
                 ':todoId': todoId,
-                ':userId': userId
+                ':createdAt': createdAt
             }
         }
         await this.docClient.delete(params).promise()
