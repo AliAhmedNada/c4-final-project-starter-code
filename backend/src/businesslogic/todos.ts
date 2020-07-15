@@ -61,7 +61,7 @@ export async function createTodo(createTodoRequest: CreateTodoRequest,jwtToken: 
           const userId = parseUserId(jwtToken)
           const todoItem = await todosAccess.getTodoItem(itemId, userId)
           console.log('todoItem',JSON.stringify(todoItem))
-          await todosAccess.deleteTodo(todoItem.todoId, todoItem.createdAt)
+          await todosAccess.deleteTodo(todoItem.userId, todoItem.createdAt)
           }
 
 
@@ -71,6 +71,6 @@ export async function createTodo(createTodoRequest: CreateTodoRequest,jwtToken: 
             console.log(todoId)
             console.log("userId:",userId)
 
-            
-            return todosAccess.generateUploadUrl(todoId,userId);
+            const todoItem = await todosAccess.getTodoItem(todoId, userId)
+            return await todosAccess.generateUploadUrl(todoId,userId,todoItem.createdAt);
             }

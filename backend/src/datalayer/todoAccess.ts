@@ -10,7 +10,7 @@ import { TodoUpdate } from '../models/TodoUpdate'
 const XAWS = AWSXRay.captureAWS(AWS)
 
 const bucketName = process.env.TODOITEM_S3_BUCKET_NAME
-const urlExpiration = process.env.SIGNED_URL_EXPIRATION
+//const urlExpiration = process.env.SIGNED_URL_EXPIRATION
 
 
 function createDynamoDBClient() {
@@ -92,18 +92,18 @@ export class TodoAccess {
         this.docClient.update(params).promise()
     }
 
-    async deleteTodo(todoId: string, createdAt: string): Promise<void> {
+    async deleteTodo(userId: string, createdAt: string): Promise<void> {
 
         var params = {
             TableName: this.todosTable,
             Key: {
-                "todoId": todoId,
+                "userId": userId,
                 "createdAt": createdAt
             },
             ConditionExpression:
-                'todoId = :todoId and createdAt = :createdAt',
+                'userId = :userId and createdAt = :createdAt',
             ExpressionAttributeValues: {
-                ':todoId': todoId,
+                ':userId': userId,
                 ':createdAt': createdAt
             }
         }
@@ -113,8 +113,8 @@ export class TodoAccess {
 
     
 
-    async generateUploadUrl(todoId: string, userId: string): Promise<string> {
-
+    async generateUploadUrl(todoId: string, userId: string, createdAt :string): Promise<string> {
+/* 
         const s3 = new XAWS.S3({
             signatureVersion: 'v4'
           })
@@ -127,20 +127,35 @@ export class TodoAccess {
           Expires:urlExpiration
       });
       console.log("uploadUrl",uploadUrl)
+ */
+
+        console.log("Generating URL");
+        const s3 = new XAWS.S3({
+            signatureVersion: 'v4'
+          })
+          console.log("todoId:",todoId)
+
+        const url = s3.getSignedUrl('putObject', {
+            Bucket: bucketName,
+            Key: todoId,
+            Expires: 1000,
+        });
+        console.log(url);
+
       await this.docClient.update({
             TableName: this.todosTable,
             Key: { 
                 "userId":userId, 
-                "todoId": todoId,
+                "createdAt": createdAt,
             },
             UpdateExpression: "set attachmentUrl=:URL",
             ExpressionAttributeValues: {
-              ":URL": uploadUrl.split("?")[0]
+              ":URL": url.split("?")[0]
           },
           ReturnValues: "UPDATED_NEW"
         })
         .promise();
-      return uploadUrl;
+      return url;
     }
    /* async generateUploadUrl(todoId: string): Promise<string> {
         console.log("Generating URL");
