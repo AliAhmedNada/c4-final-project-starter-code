@@ -54,7 +54,7 @@ export async function updateTodo(
 
     const todoItem = await todosAccess.getTodoItem(todoId, userId)
   
-    await todosAccess.updateTodo(todoItem.todoId, {
+    await todosAccess.updateTodo(todoItem.todoId,  todoItem.createdAt,{
       name: updateTodoRequest.name,
       done: updateTodoRequest.done,
       dueDate: updateTodoRequest.dueDate,
