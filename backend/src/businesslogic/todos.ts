@@ -64,8 +64,6 @@ export async function deleteTodo(
   
   const userId = parseUserId(jwtToken)
   const todoItem = await todosAccess.getTodoItem(itemId, userId)
-  console.log("todoItem.todoId",JSON.stringify(todoItem.todoId))
-  console.log("userId",JSON.stringify(todoItem.createdAt))
   await todosAccess.deleteTodo(todoItem.todoId, todoItem.createdAt)
 }
 
