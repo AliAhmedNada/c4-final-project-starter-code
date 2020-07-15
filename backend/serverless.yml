@@ -243,7 +243,7 @@ resources:
           - AttributeName: createdAt
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
-        TableName: ${self:provider.environment.TODOS_TABLE}
+        TableName: ${self:provider.environment.TODOITEM_TABLE}
         LocalSecondaryIndexes:
           - IndexName: ${self:provider.environment.TODOITEM_TABLE_GSI}
             KeySchema:

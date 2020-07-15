@@ -33,7 +33,7 @@ export const handler : APIGatewayProxyHandler = async (event: APIGatewayProxyEve
   const id = uuid.v4();
   setItemUrl(todoId, `https://${bucketName}.s3.amazonaws.com/${id}`, jwtToken);
 
-  const url = getUploadUrl(id)
+  const url = await getUploadUrl(id)
 
   return {
     statusCode: 201,

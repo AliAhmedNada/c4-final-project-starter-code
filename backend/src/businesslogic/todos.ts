@@ -22,7 +22,7 @@ export async function createTodo(
   const itemId = uuid.v4()
   const userId = parseUserId(jwtToken)
   
-  return todosAccess.createTodo({
+  return await todosAccess.createTodo({
     todoId: itemId,
     userId: userId,
     name: createTodoRequest.name,

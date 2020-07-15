@@ -5,7 +5,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 const XAWS = AWSXRay.captureAWS(AWS)
 
 import { TodoItem } from '../models/TodoItem'
-import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
+import { TodoUpdate } from '../models/TodoUpdate'
 
 
 function createDynamoDBClient() {
@@ -63,24 +63,28 @@ export class TodoAccess {
         return todo
     }
 
-    async updateTodo(todoId: string, updatedTodo: UpdateTodoRequest){
-        await this.docClient.update({
+    async updateTodo(todoId: string, createdAt: string, update: TodoUpdate): Promise<void> {
+
+        var params = {
             TableName: this.todosTable,
             Key: {
-                "todoId": todoId
+                "todoId": todoId,
+                "createdAt": createdAt
             },
-            UpdateExpression: "set #todoName = :name, done = :done, dueDate = :dueDate",
-            ExpressionAttributeNames: {
-                "#todoName": "name"
-            },
+            UpdateExpression:
+                'set #n = :name, done = :done, dueDate = :dueDate',
             ExpressionAttributeValues: {
-                ":name": updatedTodo.name,
-                ":done": updatedTodo.done,
-                ":dueDate": updatedTodo.dueDate
-            }
-        }).promise()
-
-
+                ':name': update.name,
+                ':done': update.done,
+                ':dueDate': update.dueDate,
+            },
+            ExpressionAttributeNames: {
+                '#n': 'name'
+            },
+            ReturnValues: 'UPDATED_NEW'
+        };
+        
+        this.docClient.update(params).promise()
     }
 
     async deleteTodo(todoId: string, createdAt: string): Promise<void> {
