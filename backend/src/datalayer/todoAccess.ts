@@ -8,6 +8,8 @@ import { TodoUpdate } from '../models/TodoUpdate'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
+const bucketName = process.env.ATTACHMENTS_S3_BUCKET
+const urlExpiration = process.env.SIGNED_URL_EXPIRATION
 
 
 function createDynamoDBClient() {
@@ -131,10 +133,13 @@ export class TodoAccess {
         const s3 = new XAWS.S3({
             signatureVersion: 'v4'
           })
-        const uploadUrl = s3.getSignedUrl("putObject", {
-          Bucket: process.env.TODOITEM_S3_BUCKET_NAME,
+          console.log("todoId:",todoId)
+          console.log("userId:",userId)
+
+        const uploadUrl = await s3.getSignedUrl("putObject", {
+          Bucket: bucketName,
           Key: todoId,
-          Expires: process.env.SIGNED_URL_EXPIRATION
+          Expires:urlExpiration
       });
       await this.docClient.update({
             TableName: this.todosTable,

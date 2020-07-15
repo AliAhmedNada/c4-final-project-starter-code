@@ -74,6 +74,9 @@ export async function deleteTodo(
 
 export async function generateUploadUrl(todoId: string, jwtToken: string): Promise<string> {
   const userId = parseUserId(jwtToken)
+  console.log("Setting Item URL")
+  console.log(todoId)
+  console.log("userId:",userId)
 
   return todosAccess.generateUploadUrl(todoId, userId);
 }
