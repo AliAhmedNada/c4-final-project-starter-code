@@ -9,7 +9,7 @@ import { TodoUpdate } from '../models/TodoUpdate'
 const XAWS = AWSXRay.captureAWS(AWS)
 
 const bucketName = process.env.TODOITEM_S3_BUCKET_NAME
-const urlExpiration = process.env.SIGNED_URL_EXPIRATION
+//const urlExpiration = process.env.SIGNED_URL_EXPIRATION
 
 
 function createDynamoDBClient() {
