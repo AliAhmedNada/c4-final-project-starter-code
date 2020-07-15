@@ -14,7 +14,7 @@ provider:
   region: ${opt:region, 'eu-west-3'}
 
   environment:
-    TODOITEM_TABLE: Todoitem-ali-v16-${self:provider.stage}
+    TODOITEM_TABLE: Todoitem-ali-v17-${self:provider.stage}
     TODOITEM_TABLE_GSI: byUserId
     TODOITEM_S3_BUCKET_NAME: todoitem-alinada-attachments-2020-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
