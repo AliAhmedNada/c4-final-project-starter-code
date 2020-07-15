@@ -53,7 +53,7 @@ export async function updateTodo(
 
     const todoItem = await todosAccess.getTodoItem(todoId, userId)
   
-    await todosAccess.updateTodo(todoItem.todoId, todoItem.createdAt, {
+    await todosAccess.updateTodo(todoItem.todoId, {
       name: updateTodoRequest.name,
       done: updateTodoRequest.done,
       dueDate: updateTodoRequest.dueDate,
@@ -61,11 +61,11 @@ export async function updateTodo(
 }
 
 export async function deleteTodo(
-    itemId: string,
-    jwtToken: string
-  ): Promise<void> {
-    
-    const userId = parseUserId(jwtToken)
-    const todoItem = await todosAccess.getTodoItem(itemId, userId)
-    await todosAccess.deleteTodo(todoItem.todoId, todoItem.createdAt)
+  itemId: string,
+  jwtToken: string
+): Promise<void> {
+  
+  const userId = parseUserId(jwtToken)
+  const todoItem = await todosAccess.getTodoItem(itemId, userId)
+  await todosAccess.deleteTodo(todoItem.todoId, todoItem.createdAt)
 }

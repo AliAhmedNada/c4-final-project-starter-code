@@ -5,7 +5,8 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 const XAWS = AWSXRay.captureAWS(AWS)
 
 import { TodoItem } from '../models/TodoItem'
-import { TodoUpdate } from '../models/TodoUpdate'
+import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
+
 
 function createDynamoDBClient() {
     if (process.env.IS_OFFLINE) {
@@ -66,7 +67,27 @@ export class TodoAccess {
         return todo
     }
 
-    async updateTodo(todoId: string, createdAt: string, update: TodoUpdate): Promise<void> {
+    async updateTodo(todoId: string, updatedTodo: UpdateTodoRequest){
+        await this.docClient.update({
+            TableName: this.todosTable,
+            Key: {
+                "todoId": todoId
+            },
+            UpdateExpression: "set #todoName = :name, done = :done, dueDate = :dueDate",
+            ExpressionAttributeNames: {
+                "#todoName": "name"
+            },
+            ExpressionAttributeValues: {
+                ":name": updatedTodo.name,
+                ":done": updatedTodo.done,
+                ":dueDate": updatedTodo.dueDate
+            }
+        }).promise()
+
+
+    }
+
+    async deleteTodo(todoId: string, createdAt: string): Promise<void> {
 
         var params = {
             TableName: this.todosTable,
@@ -74,31 +95,17 @@ export class TodoAccess {
                 "todoId": todoId,
                 "createdAt": createdAt
             },
-            UpdateExpression:
-                'set #n = :name, done = :done, dueDate = :dueDate',
+            ConditionExpression:
+                'todoId = :todoId and createdAt = :createdAt',
             ExpressionAttributeValues: {
-                ':name': update.name,
-                ':done': update.done,
-                ':dueDate': update.dueDate,
-            },
-            ExpressionAttributeNames: {
-                '#n': 'name'
-            },
-            ReturnValues: 'UPDATED_NEW'
-        };
-        
-        this.docClient.update(params).promise()
+                ':todoId': todoId,
+                ':createdAt': createdAt
+            }
+        }
+
+        await this.docClient.delete(params).promise()
     }
 
-    async deleteTodo(todoId: string, userId: string) {
-        const deleteTodo = await this.docClient.delete({
-            TableName: this.todosTable,
-            Key: { userId, todoId }
-        })
-        .promise();
-      return { Deleted: deleteTodo };
-    }
-  
 
     async setItemUrl(todoId: string, createdAt: string, itemUrl: string): Promise<void> {
         var params = {

@@ -5,19 +5,20 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } f
 import {deleteTodo} from "../../businesslogic/todos";
 
 
-export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const deleteTodoHandler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const authorization = event.headers.Authorization
   const split = authorization.split(' ')
   const jwtToken = split[1]
 
   const todoId = event.pathParameters.todoId;
 
-  await deleteTodo(todoId,jwtToken);
+  await deleteTodo(todoId, jwtToken);
 
   return {
     statusCode: 202,
     headers: {
-      'Access-Control-Allow-Origin': '*'    },
+      'Access-Control-Allow-Origin': '*',
+      "Access-Control-Allow-Credentials": true    },
     body: JSON.stringify({})
   }
 };

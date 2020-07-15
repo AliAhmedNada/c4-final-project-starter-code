@@ -13,7 +13,7 @@ import {
 
 
 
-export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise < APIGatewayProxyResult > => {
+export const createTodoHandler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise < APIGatewayProxyResult > => {
 
   const authorization = event.headers.Authorization
   const split = authorization.split(' ')
