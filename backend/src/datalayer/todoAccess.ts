@@ -5,11 +5,12 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import { TodoItem } from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate'
+//import { ConfigService } from 'aws-sdk'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
 const bucketName = process.env.TODOITEM_S3_BUCKET_NAME
-//const urlExpiration = process.env.SIGNED_URL_EXPIRATION
+const urlExpiration = process.env.SIGNED_URL_EXPIRATION
 
 
 function createDynamoDBClient() {
@@ -106,13 +107,13 @@ export class TodoAccess {
                 ':createdAt': createdAt
             }
         }
-
+        console.log("params",JSON.stringify(params))
         await this.docClient.delete(params).promise()
     }
 
     
 
-   /* async generateUploadUrl(todoId: string, userId: string): Promise<string> {
+    async generateUploadUrl(todoId: string, userId: string): Promise<string> {
 
         const s3 = new XAWS.S3({
             signatureVersion: 'v4'
@@ -125,9 +126,13 @@ export class TodoAccess {
           Key: todoId,
           Expires:urlExpiration
       });
+      console.log("uploadUrl",uploadUrl)
       await this.docClient.update({
             TableName: this.todosTable,
-            Key: { userId, todoId },
+            Key: { 
+                "userId":userId, 
+                "todoId": todoId,
+            },
             UpdateExpression: "set attachmentUrl=:URL",
             ExpressionAttributeValues: {
               ":URL": uploadUrl.split("?")[0]
@@ -136,8 +141,8 @@ export class TodoAccess {
         })
         .promise();
       return uploadUrl;
-    }*/
-    async generateUploadUrl(todoId: string): Promise<string> {
+    }
+   /* async generateUploadUrl(todoId: string): Promise<string> {
         console.log("Generating URL");
         const s3 = new XAWS.S3({
             signatureVersion: 'v4'
@@ -151,7 +156,7 @@ export class TodoAccess {
         });
         console.log(url);
         return url as string;
-    }
+    }*/
 
   }
 

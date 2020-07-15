@@ -71,5 +71,6 @@ export async function createTodo(createTodoRequest: CreateTodoRequest,jwtToken: 
             console.log(todoId)
             console.log("userId:",userId)
 
-            return todosAccess.generateUploadUrl(todoId);
+            
+            return todosAccess.generateUploadUrl(todoId,userId);
             }
