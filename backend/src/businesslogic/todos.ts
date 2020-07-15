@@ -6,7 +6,6 @@ import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 import { parseUserId } from '../auth/utils'
 import * as uuid from 'uuid';
 
-const bucketName = process.env.TODOITEM_S3_BUCKET_NAME
 
 const todosAccess = new TodoAccess()
 
@@ -55,11 +54,7 @@ export async function getTodoItem(todoId: string, jwtToken: string): Promise<Tod
   return await  todosAccess.getTodoItem(todoId, userId)
 }
 
-export async function setItemUrl(todoId: string, jwtToken: string,id:string): Promise<void> {
-  const userId = await parseUserId(jwtToken)
-  const todoItem = await todosAccess.getTodoItem(todoId, userId)
-  todosAccess.setItemUrl(todoItem.todoId, todoItem.createdAt, `https://${bucketName}.s3.amazonaws.com/${id}`);
-}
+
 
 export async function deleteTodo(
   itemId: string,
@@ -68,7 +63,7 @@ export async function deleteTodo(
   
   const userId = parseUserId(jwtToken)
   const todoItem = await todosAccess.getTodoItem(itemId, userId)
-  await todosAccess.deleteTodo(todoItem.todoId, todoItem.createdAt)
+  await todosAccess.deleteTodo(todoItem.todoId, todoItem.userId)
 }
 
 

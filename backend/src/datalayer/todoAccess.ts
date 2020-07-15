@@ -8,7 +8,7 @@ import { TodoUpdate } from '../models/TodoUpdate'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
-const bucketName = process.env.ATTACHMENTS_S3_BUCKET
+const bucketName = process.env.TODOITEM_S3_BUCKET_NAME
 const urlExpiration = process.env.SIGNED_URL_EXPIRATION
 
 
@@ -91,39 +91,21 @@ export class TodoAccess {
         this.docClient.update(params).promise()
     }
 
-    async deleteTodo(todoId: string, createdAt: string): Promise<void> {
+    async deleteTodo(todoId: string, userId: string): Promise<void> {
         var params = {
             TableName: this.todosTable,
             Key: {
                 "todoId": todoId,
-                "createdAt": createdAt
+                "userId": userId
             },
             ConditionExpression:
-                'todoId = :todoId and createdAt = :createdAt',
+                'todoId = :todoId and userId = :userId',
             ExpressionAttributeValues: {
                 ':todoId': todoId,
-                ':createdAt': createdAt
+                ':userId': userId
             }
         }
         await this.docClient.delete(params).promise()
-    }
-
-
-    async setItemUrl(todoId: string, createdAt: string, itemUrl: string): Promise<void> {
-        var params = {
-            TableName: this.todosTable,
-            Key: {
-                todoId,
-                createdAt
-            },
-            UpdateExpression: 'set attachmentUrl = :attachmentUrl',
-            ExpressionAttributeValues: {
-                ':attachmentUrl': itemUrl
-            },
-            ReturnValues: 'UPDATED_NEW'
-        }
-
-        await this.docClient.update(params).promise();
     }
 
     
