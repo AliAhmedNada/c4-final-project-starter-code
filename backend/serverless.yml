@@ -14,7 +14,7 @@ provider:
   region: ${opt:region, 'eu-west-3'}
 
   environment:
-    TODOITEM_TABLE: Todoitem-ali-v11-${self:provider.stage}
+    TODOITEM_TABLE: Todoitem-ali-v12-${self:provider.stage}
     TODOITEM_TABLE_GSI: byUserId
     TODOITEM_S3_BUCKET_NAME: todoitem-alinada-attachments-2020-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
@@ -227,27 +227,29 @@ resources:
               Resource: 'arn:aws:s3:::${self:provider.environment.TODOITEM_S3_BUCKET_NAME}/*'
         Bucket: !Ref AttachmentsBucket
 
-    TodoItemTable:
+    TodosDynamoDBTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          - AttributeName: userId
-            AttributeType: S
           - AttributeName: todoId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: userId
             AttributeType: S
         KeySchema:
-          - AttributeName: userId
-            KeyType: HASH
           - AttributeName: todoId
+            KeyType: HASH
+          - AttributeName: createdAt
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
-        TableName: ${self:provider.environment.TODOITEM_TABLE}
+        TableName: ${self:provider.environment.TODOS_TABLE}
         LocalSecondaryIndexes:
           - IndexName: ${self:provider.environment.TODOITEM_TABLE_GSI}
             KeySchema:
-              - AttributeName: userId
-                KeyType: HASH
               - AttributeName: todoId
+                KeyType: HASH
+              - AttributeName: userId
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL

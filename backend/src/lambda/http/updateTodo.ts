@@ -4,7 +4,7 @@ import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
 import {updateTodo} from "../../businesslogic/todos";
 
 
-export const updateTodoHandler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId;
   const authorization = event.headers.Authorization
   const split = authorization.split(' ')

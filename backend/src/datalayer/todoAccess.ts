@@ -26,19 +26,15 @@ export class TodoAccess {
         private readonly todosUserIndex = process.env.TODOITEM_TABLE_GSI
         ) {
     }
-
     async getAllTodos(userId: string): Promise<TodoItem[]> {
         console.log('Getting all todos')
-        
-        const result = await this.docClient.query({
+        const result = await this.docClient.scan({
             TableName: this.todosTable,
-            IndexName: this.todosUserIndex,
-            KeyConditionExpression: 'userId = :userId',
+            FilterExpression: 'userId = :userId',
             ExpressionAttributeValues: {
                 ':userId' : userId
             }
         }).promise()
-        
         const items = result.Items
         return items as TodoItem[]
     }
