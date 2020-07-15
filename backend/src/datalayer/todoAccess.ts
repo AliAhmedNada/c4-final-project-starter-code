@@ -106,6 +106,7 @@ export class TodoAccess {
                 ':createdAt': createdAt
             }
         }
+
         await this.docClient.delete(params).promise()
     }
 
