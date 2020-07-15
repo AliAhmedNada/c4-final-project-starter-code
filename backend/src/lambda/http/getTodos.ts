@@ -8,14 +8,11 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     const jwtToken = split[1]
   
     const todos = await getAllTodos(jwtToken);
-
-    // Send results
     return {
         statusCode: 200,
         headers: {
-      'Access-Control-Allow-Origin': '*',
-      "Access-Control-Allow-Credentials" : true 
-        },
+      'Access-Control-Allow-Origin': '*'
+              },
         body: JSON.stringify({
             items: todos
         })
