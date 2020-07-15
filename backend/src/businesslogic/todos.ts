@@ -70,3 +70,10 @@ export async function deleteTodo(
   const todoItem = await todosAccess.getTodoItem(itemId, userId)
   await todosAccess.deleteTodo(todoItem.todoId, todoItem.createdAt)
 }
+
+
+export async function generateUploadUrl(todoId: string, jwtToken: string): Promise<string> {
+  const userId = parseUserId(jwtToken)
+
+  return todosAccess.generateUploadUrl(todoId, userId);
+}
