@@ -88,7 +88,6 @@ export class TodoAccess {
     }
 
     async deleteTodo(todoId: string, createdAt: string): Promise<void> {
-
         var params = {
             TableName: this.todosTable,
             Key: {
@@ -102,7 +101,6 @@ export class TodoAccess {
                 ':createdAt': createdAt
             }
         }
-
         await this.docClient.delete(params).promise()
     }
 

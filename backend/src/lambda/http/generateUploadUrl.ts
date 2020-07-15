@@ -3,7 +3,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult ,APIGatewayProxyHandler } f
 import 'source-map-support/register'
 import * as AWS  from 'aws-sdk'
 import * as AWSXRay from 'aws-xray-sdk'
-import * as uuid from 'uuid';
+import * as uuid from 'uuid'
 
 import { setItemUrl } from '../../businessLogic/todos'
 
@@ -22,16 +22,16 @@ export const handler : APIGatewayProxyHandler = async (event: APIGatewayProxyEve
   const authorization = event.headers.Authorization;
   const split = authorization.split(' ')
   const jwtToken = split[1]
-  function getUploadUrl(imageId: string) {
-    return s3.getSignedUrl('putObject', {
+  async function getUploadUrl(imageId: string) {
+    return await s3.getSignedUrl('putObject', {
       Bucket: bucketName,
       Key: imageId,
       Expires: urlExpiration
     })
   }
-  
   const id = uuid.v4();
-  setItemUrl(todoId, `https://${bucketName}.s3.amazonaws.com/${id}`, jwtToken);
+
+  setItemUrl(todoId, jwtToken,id);
 
   const url = await getUploadUrl(id)
 
