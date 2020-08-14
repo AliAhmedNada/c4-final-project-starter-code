@@ -1,6 +1,6 @@
-<script src="https://gist.github.com/rxaviers/7360908.js"></script>
 
-# Serverless TODO 💪💪💪💪
+
+# Serverless TODO 
 
 To implement this project, you need to implement a simple TODO application using AWS Lambda and Serverless framework. Search for all comments starting with the `TODO:` in the code to find the placeholders that you need to implement.
 
